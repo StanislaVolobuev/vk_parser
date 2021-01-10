@@ -58,7 +58,7 @@ def data_change(p):
 data_use =data_change(p)
 
 def friends_list(use_id=my_id):
-    session = vk.Session(access_token="a58d2d18787a6943e347cc0f852daaef276e2e08a8ec5f17f7712acf09dc88f7b5f225b18c93f88cf4c4f")
+    session = vk.Session(access_token="token")
     vk_api = vk.API(
         session,  v = '5.35' ,
         lang = 'ru' ,
