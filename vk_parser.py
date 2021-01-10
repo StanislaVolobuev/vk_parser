@@ -8,7 +8,7 @@ def new_session():
     которого будут осуществляться запросы к VK API
     :return: обьект сессии vk_api
     '''
-    session = vk.Session(access_token="a58d2d18787a6943e347cc0f852daaef276e2e08a8ec5f17f7712acf09dc88f7b5f225b18c93f88cf4c4f")
+    session = vk.Session(access_token="token")
     vk_api = vk.API(
         session,  v = '5.35' ,
         lang = 'ru' ,
