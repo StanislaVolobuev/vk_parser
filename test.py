@@ -32,12 +32,13 @@ def data_change(p):
     print('gjhhkjjlijkjgghc', len(head))
     num = 0
     while num < 80:
-        if num < 11 or 12 < num < 36 or 36 < num <40:
+        if num < 11 or 12 < num < 36 or 36 < num <40 or 42 < num < 52:
             data.append(p[0][head[num]])
         if num == 11 or num == 12:
             data.append(p[0][head[num]]['title'])
         if num == 36:
-            pass
+            if len(p[0][head[num]]) > 0:
+                data.append(' '.join(p[0][head[num]]))
         if num == 40:
             data_str = ''
             if len(p[0][head[num]]) > 0:
@@ -45,9 +46,31 @@ def data_change(p):
                     data_str += ' '
                     data_str += str(p[0][head[num]][key])
             data.append(data_str)
-        if num == 41:
+        if num == 41 or num == 42 or num == 60 or num == 61 or num == 62:
+            data_str = ''
+            if len(p[0][head[num]]) > 0:
+                # test = []
+                for i in p[0][head[num]]:
+                    # test.append(i)
+                    data_dict = i
+                    dda = ' '
+                    for key in data_dict.keys():
+                        dda += ' '
+                        dda += str(data_dict[key])
+                    print(dda)
+                    '''
+                    for key in p[0][head[num]][i].keys():
+                        data_str += ' '
+                        data_str += str(p[0][head[num]][i][key])
+                   
+                    '''
+                    data_str += dda
+                    data_str += '; '
 
-            pass
+                data.append(data_str)
+
+
+
         num += 1
     print('data', data)
 
