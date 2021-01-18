@@ -2,6 +2,7 @@ import  vk
 import openpyxl
 
 
+#3dvf
 my_id = 11132894
 def user_f(id):
     session = vk.Session(access_token="token")
@@ -26,10 +27,35 @@ for key in list(p[0].keys()):
 
 
 def data_change(p):
-    head = ['first_name', 'id', 'last_name', 'sex', 'screen_name', 'verified', 'friend_status', 'nickname', 'maiden_name', 'domain', 'bdate', 'city', 'country', 'timezone', 'has_photo', 'has_mobile', 'is_friend', 'can_post', 'can_see_audio', 'skype', 'wall_default', 'interests', 'books', 'tv', 'quotes', 'about', 'games', 'movies', 'activities', 'music', 'can_write_private_message', 'can_send_friend_request', 'mobile_phone', 'home_phone', 'site', 'status', 'exports', 'followers_count', 'is_favorite', 'is_hidden_from_feed', 'occupation', 'career', 'military', 'university', 'university_name', 'faculty', 'faculty_name', 'graduation', 'education_form', 'education_status', 'home_town', 'relation', 'personal', '#alcohol', '#inspired_by', '##langs', '#life_main', '#people_main', '#religion', '#smoking', 'universities', 'schools', 'relatives', 'counters', '#albums', '#audios', '#followers', '#friends', '#gifts', '#notes', '#online_friends', '#pages', '#photos', '#subscriptions', '#user_photos', '#videos', '#new_photo_tags', '#new_recognition_tags', '#clips_followers', '#groups']
+    '''
+    функция подготовки данных для переноса в эксель
+    используя список head (его значения - названия столбцов) находит соответствующую
+    информацию в массиве и формирует соответствующий список для строчного переноса в эксель
+    :param p:
+    :return:
+    '''
+    head = [
+        'first_name', 'id', 'last_name', 'sex', 'screen_name', 'verified',
+        'friend_status', 'nickname', 'maiden_name', 'domain', 'bdate',
+        'city', 'country', 'timezone', 'has_photo', 'has_mobile',
+        'is_friend', 'can_post', 'can_see_audio', 'skype', 'wall_default',
+        'interests', 'books', 'tv', 'quotes', 'about', 'games', 'movies',
+        'activities', 'music', 'can_write_private_message',
+        'can_send_friend_request', 'mobile_phone', 'home_phone', 'site',
+        'status', 'exports', 'followers_count', 'is_favorite',
+        'is_hidden_from_feed', 'occupation', 'career', 'military',
+        'university', 'university_name', 'faculty', 'faculty_name',
+        'graduation', 'education_form', 'education_status', 'home_town',
+        'relation', 'personal', 'alcohol', 'inspired_by', 'langs',
+        'life_main', 'people_main', 'religion', 'smoking', 'universities',
+        'schools', 'relatives', 'counters', 'albums', 'audios', 'followers',
+        'friends', 'gifts', 'notes', 'online_friends', 'pages', 'photos',
+        'subscriptions', 'user_photos', 'videos', 'new_photo_tags',
+        'new_recognition_tags', 'clips_followers', 'groups'
+            ]
     data = list()
     header = list()
-    print('gjhhkjjlijkjgghc', len(head))
+    print('gjhhkjjlijkjgghc', len(head), head)
     num = 0
     while num < 80:
         if num < 11 or 12 < num < 36 or 36 < num <40 or 42 < num < 52:
@@ -58,6 +84,7 @@ def data_change(p):
                         dda += ' '
                         dda += str(data_dict[key])
                     print(dda)
+
                     '''
                     for key in p[0][head[num]][i].keys():
                         data_str += ' '
@@ -68,14 +95,47 @@ def data_change(p):
                     data_str += '; '
 
                 data.append(data_str)
-
-
+        if num == 52:
+            if len(p[0][head[num]]) > 0:
+                data.append('=>')
+                while num != 59:
+                    num += 1
+                    data_personal = p[0][head[52]]
+                    if num == 55:
+                        langs_inf = ' '.join(data_personal[head[num]])
+                        data.append(langs_inf)
+                    else:
+                        data.append(data_personal[head[num]])
+        if num == 63:
+            data_counters = p[0][head[num]]
+            data.append('=>')
+        if num > 63:
+            data_counters == p[0][head[63]]
+            data.append(data_counters[head[num]])
 
         num += 1
     print('data', data)
 
 
-    '''
+def wall():
+    session = vk.Session(access_token="token")
+    vk_api = vk.API(
+        session,  v = '5.35' ,
+        lang = 'ru' ,
+        timeout = 10
+    )
+    user_wall_own = vk_api.wall.get(
+        user_id=11132894, filter = 'owner', count = "1")
+
+    user_wall_all = vk_api.wall.get(
+        user_id=11132894, filter = 'all', count = "1")
+    print(user_wall_own)
+    print(user_wall_all)
+    return user_wall_own, user_wall_all
+walls=wall()
+
+
+'''
     for key in list(p[0].keys()):
         if key  in ['city', 'country']:
             print('ok', key, p[0][key]['title'])
