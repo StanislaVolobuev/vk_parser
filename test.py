@@ -135,6 +135,52 @@ def wall():
 walls=wall()
 
 
+def years_old(head, data):
+    friends=vkapi.friends.get(user_id=user,fields='bdate')
+    bdates=0
+    counter=0
+    if friends['count']>0:
+        for i in friends['items']:
+            if 'bdate' in i.keys():
+                if len(i['bdate'])>5:
+                    bdates+=int(i['bdate'][-4:])
+                    counter+=1
+        avr=bdates//counter
+    else:
+        avr=1990
+    ageFromTo=[avr]
+    for i in range(1,60):
+        ageFromTo.append(avr+i)
+        ageFromTo.append(avr-i)
+        info=vkapi.users.get(user_ids=user,fields='city,bdate')
+    if 'bdate' in info[0].keys():
+        if len(info[0]['bdate'])>5:
+            print(info[0]['bdate'][-4:])
+            sys.exit()
+        dat=info[0]['bdate'].split('.')
+    if 'city' in info[0].keys():
+        cit=info[0]['city']['id']
+    fname=info[0]['first_name']
+    lname=info[0]['last_name']
+    for i in ageFromTo:
+        while True:
+            try:
+                ans=vkapi.users.search(q=fname+' '+lname,count=1000,
+                                    birth_day=dat[0],birth_month=dat[1],
+                                    city=0,birth_year=i)
+                break
+            except vk.exceptions.VkAPIError as text:
+                if str(text)[:2]=='6.':
+                    time.sleep(1)
+                    continue
+        if ans['count']>0:
+            for j in ans['items']:
+                if str(j['id'])==user:
+                    print(i)
+                    flag=True
+        if flag:
+            break
+
 '''
     for key in list(p[0].keys()):
         if key  in ['city', 'country']:
