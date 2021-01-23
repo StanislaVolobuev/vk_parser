@@ -3,7 +3,7 @@ import vk
 id = 11132894
 token = "token"
 
-def API(id, token):
+def API(token):
     session = vk.Session(access_token=token)
     vk_api = vk.API(
         session,  v = '5.35' ,
@@ -13,8 +13,8 @@ def API(id, token):
     return vk_api
 
 
-def user_field():
-    vk_api = API(id, token)
+def user_field(id):
+    vk_api = API(token)
     user_fields = vk_api.users.get(
         user_id=id,
         fields="deactivated, is_closed, can_access_closed, about, activities, bdate, books, can_post, can_see_audio, can_send_friend_request, can_write_private_message, career, city, connections, contacts, counters, country, domain, education, exports, followers_count, friend_status, games, has_mobile, has_photo, home_town, interests, is_favorite, is_friend, is_hidden_from_feed, lists,maiden_name, military, movies, music, nickname, occupation, personal, quotes, relatives, relation, schools, screen_name, site,   sex, status, timezone, trending, tv, universities, verified, wall_default"
@@ -30,7 +30,7 @@ def user_field():
     user_fields[0]['wall_all'] = user_wall_all['count']
     print(user_fields)
     return user_fields
-p = user_field()
+p = user_field(id)
 
 def data_change(p):
     '''
@@ -66,12 +66,16 @@ def data_change(p):
     num = 0
     while num < 83:
         if num < 11 or 12 < num < 36 or 36 < num <40 or 42 < num < 52 or 79 < num < 82:
-            data.append(p[0][head[num]])
+            if head[num] in p[0]:
+                data.append(p[0][head[num]])
+            else:
+                data.append('-')
         if num == 11 or num == 12:
             data.append(p[0][head[num]]['title'])
         if num == 36:
-            if len(p[0][head[num]]) > 0:
-                data.append(' '.join(p[0][head[num]]))
+            if head[num] in p[0]:
+                if len(p[0][head[num]]) > 0:
+                    data.append(' '.join(p[0][head[num]]))
         if num == 40:
             data_str = ''
             if len(p[0][head[num]]) > 0:
@@ -118,7 +122,10 @@ def data_change(p):
             data.append('=>')
         if 63 < num < 80:
             data_counters == p[0][head[63]]
-            data.append(data_counters[head[num]])
+            if head[num] in data_counters:
+                data.append(data_counters[head[num]])
+            else:
+                data.append('-')
 
         num += 1
     print('data', data)
@@ -128,3 +135,16 @@ def data_change(p):
 test2 = data_change(p)
 
 
+
+def friends_list(use_id = id, token = token):
+    vk_api = API(token)
+    user_friends = vk_api.friends.get(
+        user_id=use_id,
+        order='hints'
+    )
+    print('test3', user_friends)
+    return user_friends
+test3 = friends_list()
+
+test4 = user_field(test3['items'][-8])
+test5 = data_change(test4)
