@@ -1,4 +1,5 @@
 import vk
+import time
 
 id = 11132894
 token = "token"
@@ -11,6 +12,32 @@ def API(token):
         timeout = 10
     )
     return vk_api
+
+
+def old(user):
+    avr=1980
+    ageFromTo=[avr]
+    for i in range(1,40):
+        ageFromTo.append(avr+i)
+        ageFromTo.append(avr-i)
+    vk_api = API(token)
+    info=vk_api.users.get(user_ids=user,fields='city, bdate')
+    if 'city' in info[0].keys():
+        cit=info[0]['city']['id']
+    fname=info[0]['first_name']
+    lname=info[0]['last_name']
+    print('поиск даты рождения')
+    rn = 0
+    for i in ageFromTo:
+        ans=vk_api.users.search(q=fname+' '+lname,filters='friends',count=1000,birth_year=i)
+        time.sleep(0.5)
+
+        if ans['count'] > 0:
+            if len(ans['items']) > 0:
+                if ans['items'][0]['id'] == user:
+                    print('bingo', i, fname, ans)
+
+        print(i, user, ans)
 
 
 def user_field(id):
@@ -28,7 +55,8 @@ def user_field(id):
         user_id=11132894, filter = 'all', count = "1")
     user_fields[0]['wall_own'] = user_wall_own['count']
     user_fields[0]['wall_all'] = user_wall_all['count']
-    print(user_fields)
+
+
     return user_fields
 p = user_field(id)
 
@@ -71,52 +99,59 @@ def data_change(p):
             else:
                 data.append('-')
         if num == 11 or num == 12:
-            data.append(p[0][head[num]]['title'])
+            if head[num] in p[0]:
+                data.append(p[0][head[num]]['title'])
+            else:
+                data.append('-')
         if num == 36:
             if head[num] in p[0]:
                 if len(p[0][head[num]]) > 0:
                     data.append(' '.join(p[0][head[num]]))
         if num == 40:
-            data_str = ''
-            if len(p[0][head[num]]) > 0:
-                for key in p[0][head[num]].keys():
-                    data_str += ' '
-                    data_str += str(p[0][head[num]][key])
-            data.append(data_str)
-        if num == 41 or num == 42 or num == 60 or num == 61 or num == 62:
-            data_str = ''
-            if len(p[0][head[num]]) > 0:
-                # test = []
-                for i in p[0][head[num]]:
-                    # test.append(i)
-                    data_dict = i
-                    dda = ' '
-                    for key in data_dict.keys():
-                        dda += ' '
-                        dda += str(data_dict[key])
-                    print(dda)
-
-                    '''
-                    for key in p[0][head[num]][i].keys():
+            if head[num] in p[0]:
+                data_str = ''
+                if len(p[0][head[num]]) > 0:
+                    for key in p[0][head[num]].keys():
                         data_str += ' '
-                        data_str += str(p[0][head[num]][i][key])
-                   
-                    '''
-                    data_str += dda
-                    data_str += '; '
-
+                        data_str += str(p[0][head[num]][key])
                 data.append(data_str)
+            else:
+                data.append('-')
+        if num == 41 or num == 42 or num == 60 or num == 61 or num == 62:
+            if head[num] in p[0]:
+                data_str = ''
+                if len(p[0][head[num]]) > 0:
+                    # test = []
+                    for i in p[0][head[num]]:
+                        # test.append(i)
+                        data_dict = i
+                        dda = ' '
+                        for key in data_dict.keys():
+                            dda += ' '
+                            dda += str(data_dict[key])
+                        print(dda)
+                        data_str += dda
+                        data_str += '; '
+
+                    data.append(data_str)
         if num == 52:
-            if len(p[0][head[num]]) > 0:
-                data.append('=>')
-                while num != 59:
-                    num += 1
-                    data_personal = p[0][head[52]]
-                    if num == 55:
-                        langs_inf = ' '.join(data_personal[head[num]])
-                        data.append(langs_inf)
-                    else:
-                        data.append(data_personal[head[num]])
+            if head[num] in p[0]:
+                if len(p[0][head[num]]) > 0:
+                    data.append('=>')
+                else:
+                    data.append("=")
+                    num = 59
+                    while num != 59:
+                        num += 1
+                        data_personal = p[0][head[52]]
+                        if num == 55:
+                            langs_inf = ' '.join(data_personal[head[num]])
+                            data.append(langs_inf)
+                        else:
+                            if head[num] in data_personal:
+                                data.append(data_personal[head[num]])
+                            else:
+                                data.append('-')
         if num == 63:
             data_counters = p[0][head[num]]
             data.append('=>')
@@ -144,7 +179,10 @@ def friends_list(use_id = id, token = token):
     )
     print('test3', user_friends)
     return user_friends
+
 test3 = friends_list()
 
-test4 = user_field(test3['items'][-8])
+test4 = user_field(test3['items'][-10])
 test5 = data_change(test4)
+bd = old(test3['items'][-10])
+print(bd)
