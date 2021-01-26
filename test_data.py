@@ -28,15 +28,28 @@ def old(user):
     lname=info[0]['last_name']
     print('поиск даты рождения')
     rn = 0
+    flag = False
     for i in ageFromTo:
-        ans=vk_api.users.search(q=fname+' '+lname,filters='friends',count=1000,birth_year=i)
-        time.sleep(0.5)
+        while True:
+            try:
+                ans=vk_api.users.search(q=fname+' '+lname,count=1000,birth_year=i)
+                break
+            except vk.exceptions.VkAPIError as text:
+                if str(text)[:2]=='6.':
+                    time.sleep(1)
+                    continue
+
+
+
+        # time.sleep(0.5)
 
         if ans['count'] > 0:
-            if len(ans['items']) > 0:
-                if ans['items'][0]['id'] == user:
-                    print('bingo', i, fname, ans)
-
+            for j in ans['items']:
+                if j['id'] == user:
+                    print('bingo', i, fname, j)
+                    flag=True
+        if flag:
+            break
         print(i, user, ans)
 
 
@@ -55,6 +68,7 @@ def user_field(id):
         user_id=11132894, filter = 'all', count = "1")
     user_fields[0]['wall_own'] = user_wall_own['count']
     user_fields[0]['wall_all'] = user_wall_all['count']
+
 
 
     return user_fields
@@ -182,7 +196,7 @@ def friends_list(use_id = id, token = token):
 
 test3 = friends_list()
 
-test4 = user_field(test3['items'][-10])
+test4 = user_field(test3['items'][10])
 test5 = data_change(test4)
-bd = old(test3['items'][-10])
+bd = old(test3['items'][10])
 print(bd)
