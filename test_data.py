@@ -15,6 +15,7 @@ def API(token):
 
 
 def old(user):
+    born = 'fail'
     avr=1980
     ageFromTo=[avr]
     for i in range(1,40):
@@ -47,10 +48,12 @@ def old(user):
             for j in ans['items']:
                 if j['id'] == user:
                     print('bingo', i, fname, j)
+                    born = i
                     flag=True
         if flag:
             break
         print(i, user, ans)
+    return born
 
 
 def user_field(id):
@@ -68,6 +71,14 @@ def user_field(id):
         user_id=11132894, filter = 'all', count = "1")
     user_fields[0]['wall_own'] = user_wall_own['count']
     user_fields[0]['wall_all'] = user_wall_all['count']
+
+    if 'bdate' in user_fields[0]:
+        if len(user_fields[0]['bdate']) > 5:
+            born = user_fields[0]['bdate'].split('.')[-1]
+
+        else:
+            born = old(id)
+        print(born)
 
 
 
@@ -167,12 +178,18 @@ def data_change(p):
                             else:
                                 data.append('-')
         if num == 63:
-            data_counters = p[0][head[num]]
-            data.append('=>')
+            if head[num] in p[0]:
+                data_counters = p[0][head[num]]
+                data.append('=>')
+            else:
+                data.append('информация не доступна')
         if 63 < num < 80:
-            data_counters == p[0][head[63]]
-            if head[num] in data_counters:
-                data.append(data_counters[head[num]])
+            if head[63] in p[0]:
+                data_counters == p[0][head[63]]
+                if head[num] in data_counters:
+                    data.append(data_counters[head[num]])
+                else:
+                    data.append('-')
             else:
                 data.append('-')
 
@@ -196,7 +213,7 @@ def friends_list(use_id = id, token = token):
 
 test3 = friends_list()
 
-test4 = user_field(test3['items'][10])
+test4 = user_field(test3['items'][17])
 test5 = data_change(test4)
-bd = old(test3['items'][10])
-print(bd)
+bd = old(test3['items'][17])
+# print(bd)
