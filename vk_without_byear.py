@@ -25,7 +25,8 @@ head = [
     'schools', 'relatives', 'counters', 'albums', 'audios', 'followers',
     'friends', 'gifts', 'notes', 'online_friends', 'pages', 'photos',
     'subscriptions', 'user_photos', 'videos', 'new_photo_tags',
-    'new_recognition_tags', 'clips_followers', 'groups', 'wall_own', 'wall_all'
+    'new_recognition_tags', 'clips_followers', 'groups', 'wall_own', 'wall_all',
+    'skype', 'facebook', 'twitter', 'livejournal', 'instagram'
 ] # Список ключей для обработки ответа сервера
 
 
@@ -88,8 +89,8 @@ def data_change(p, head):
 
     data = list()
     num = 0
-    while num < 84:
-        if num < 11 or 12 < num < 36 or 36 < num <40 or 42 < num < 52 or 79 < num < 82:
+    while num < 88:
+        if num < 11 or 12 < num < 36 or 36 < num <40 or 42 < num < 52 or 80 < num < 88:
             if head[num] in p[0]:
                 data.append(p[0][head[num]])
             else:
@@ -120,7 +121,7 @@ def data_change(p, head):
             else:
                 data.append('-')
 
-        if num == 41 or num == 42 or num == 60 or num == 61 or num == 62:
+        if num == 41 or num == 42 or num == 63 or num == 61 or num == 62:
             if head[num] in p[0]:
                 data_str = ''
                 if len(p[0][head[num]]) > 0:
@@ -180,6 +181,7 @@ def data_change(p, head):
             else:
                 data.append('-')
 
+
         num += 1
 
     return data
@@ -206,14 +208,18 @@ def main(*args, **kwargs):
     start = int(read_frame.read())
     read_frame.close()
     '''
-    i = 0
-    while -1 < i <10: # len(list_friends)):
+
+    first_step = 200 # от нуля с шагом 200 при запуске парсера
+    i = first_step
+    start = i - 1
+    end = i + 200
+    while start < i < end: # len(list_friends)):
 
         data_rows =[]
         while True:
             try:
                 user_row = user_field(list_friends[i])
-                print(user_row)
+                # print(user_row)
                 break
             except vk.exceptions.VkAPIError as text:
                 if str(text):
@@ -236,7 +242,7 @@ def main(*args, **kwargs):
         i += 1
         s += 1   #
 
-    wr = open('parsing_error.txt', 'w')
+    wr = open('parsing_error'+str(first_step)+str(end)+'.txt', 'w')
     for i in error:
         for j in i:
             wr.write(str(j) + '       ')
@@ -259,7 +265,7 @@ def main(*args, **kwargs):
             cell = sheet.cell(row=row, column=col)
             cell.value = inform
 
-    wb.save('parsing_without_born_years.xlsx')
+    wb.save('parsing_without_born_years'+str(first_step)+str(end)+'.xlsx')
 
 
 
