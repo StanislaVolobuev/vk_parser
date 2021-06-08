@@ -3,7 +3,7 @@ import openpyxl
 import time, datetime
 
 id = 'peshkanavalnoga'   # по этому id осуществляется парсинг списка id из списка друзей
-token = "token"
+token = "5234cc6aae71324e6ba496892ed55d7ff5fa34055fbb3e55f215fc46ac289de795e268f14d918d755d381"
                 # token ключ доступа, необходимо
                 # зарегестрировать на пользователя, в соответствии с id выше
 
@@ -64,14 +64,13 @@ def user_field(pars_id):
     user_fields = vk_api.groups.getMembers(
         group_id=pars_id,
         offset=0,
-        count=3,
+        count=1000,
         fields=' sex, bdate, city, country, photo_50, photo_100, photo_200_orig, photo_200, photo_400_orig, photo_max, photo_max_orig, online, online_mobile, lists, domain, has_mobile, contacts, connections, site, education, universities, schools, can_post, can_see_all_posts, can_see_audio, can_write_private_message, status, last_seen, common_count, relation, relatives')
 
 
     return user_fields
 ''' скрипт создания шапки таблицы'''
 p = user_field(id)
-print(p)
 n=0
 for el in p['items']:
     '''
@@ -101,7 +100,7 @@ def data_change_by_row(row, head_group):
             if 10 < num < 13:
                 data_row.append(row[head_group[num]]['title'])
             if num == 27:
-                time_el =str(row[head_group[num]]['platform'])+str(datetime.datetime.fromtimestamp(row[head_group[num]]['time']))
+                time_el =str(row[head_group[num]]['platform'])+" "+str(datetime.datetime.fromtimestamp(row[head_group[num]]['time']))
                 data_row.append(time_el)
             if 37 < num < 41:
                 str_el = ''
@@ -109,6 +108,7 @@ def data_change_by_row(row, head_group):
                     for el in row[head_group[num]]:
                         for k_el in el:
                             str_el +=  str(el[k_el])
+                            str_el += ' '
                     data_row.append(str_el)
                 else:
                     data_row.append('-')
@@ -145,3 +145,21 @@ wr.write(p)
 wr.close()
 
 '''
+def xl(data_list):
+    wb = openpyxl.Workbook()
+
+    # добавляем новый лист
+    wb.create_sheet(title='Первый лист', index=0)
+    # получаем лист, с которым будем работать
+    sheet = wb['Первый лист']
+    for col, title in zip(range(2, 55), head_group):
+        cell = sheet.cell(row=1, column=col)
+        cell.value = title
+    for row, data_row in zip(range(2, len(data_list) + 2), data_list):
+        for col, inform in zip(range(2, len(data_row) + 5), data_row):
+            cell = sheet.cell(row=row, column=col)
+            cell.value = inform
+
+    wb.save('test_pars\parsing_group_test.xlsx')
+
+run=xl(result)
